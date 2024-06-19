@@ -33,6 +33,22 @@ app.get('/api/notes/:id', (req, res, next) => {
 
 app.delete('/api/notes/:id', (req, res, next) => {
     const { id } = req.params
+    const note = req.body
+    const newNoteInfo = {
+        title: note.title,
+        body: note.body,
+    }
+    Note.findByIdAndUpdate(id, newNoteInfo, { new: true })
+        .then((result) => {
+            res.json(result)
+        })
+        .catch((err) => {
+            next(err)
+        })
+})
+app.put('/api/notes/:id', (req, res, next) => {
+    const { id } = req.params
+
     Note.findOneAndDelete(id)
         .then((result) => {
             res.status(204).end()
