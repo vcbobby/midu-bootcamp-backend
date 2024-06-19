@@ -33,13 +33,14 @@ app.get('/api/notes/:id', (req, res, next) => {
 
 app.delete('/api/notes/:id', (req, res, next) => {
     const { id } = req.params
-    Note.findByIdAndRemove(id)
+    Note.findOneAndDelete(id)
         .then((result) => {
             res.status(204).end()
         })
         .catch((err) => {
             next(err)
         })
+    res.status(204).end()
 })
 
 app.post('/api/notes', (req, res) => {
