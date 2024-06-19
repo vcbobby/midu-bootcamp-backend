@@ -31,7 +31,7 @@ app.get('/api/notes/:id', (req, res, next) => {
         })
 })
 
-app.delete('/api/notes/:id', (req, res, next) => {
+app.put('/api/notes/:id', (req, res, next) => {
     const { id } = req.params
     const note = req.body
     const newNoteInfo = {
@@ -46,7 +46,7 @@ app.delete('/api/notes/:id', (req, res, next) => {
             next(err)
         })
 })
-app.put('/api/notes/:id', (req, res, next) => {
+app.delete('/api/notes/:id', (req, res, next) => {
     const { id } = req.params
 
     Note.findOneAndDelete(id)
