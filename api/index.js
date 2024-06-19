@@ -21,13 +21,14 @@ app.get('/api/notes', (req, res) => {
 })
 
 app.get('/api/notes/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const note = notes.find((note) => note.id === id)
-    if (note) {
-        res.json(note)
-    } else {
-        res.status(404).end()
-    }
+    const { id } = req.params
+    Note.findById(id)
+        .then((note) => {
+            res.json(note)
+        })
+        .catch((err) => {
+            res.status(400).end()
+        })
 })
 
 app.delete('/api/notes/:id', (req, res) => {
