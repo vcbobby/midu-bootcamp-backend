@@ -45,16 +45,14 @@ app.post('/api/notes', (req, res) => {
             error: 'The content of note is incomplete',
         })
     }
-    const ids = notes.map((note) => note.id)
-    const maxId = Math.max(...ids)
-    const newNote = {
-        id: maxId + 1,
-        userId: 1,
+
+    const newNote = new Note({
         title: note.title,
         body: note.body,
-    }
-    notes = [...notes, newNote]
-    res.json(newNote)
+    })
+    newNote.save().then((savedNote) => {
+        res.json(savedNote)
+    })
 })
 
 app.use((req, res) => {
