@@ -31,11 +31,15 @@ app.get('/api/notes/:id', (req, res, next) => {
         })
 })
 
-app.delete('/api/notes/:id', (req, res) => {
-    const id = Number(req.params.id)
-    notes = notes.filter((note) => note.id !== id)
-
-    res.status(204).end()
+app.delete('/api/notes/:id', (req, res, next) => {
+    const { id } = req.params
+    Note.findByIdAndRemove(id)
+        .then((result) => {
+            res.status(204).end()
+        })
+        .catch((err) => {
+            next(err)
+        })
 })
 
 app.post('/api/notes', (req, res) => {
