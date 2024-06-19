@@ -1,7 +1,5 @@
 const mongoose = require('mongoose')
-const connectionString =
-    'mongodb+srv://castillo:vcbobby@cluster0.ysdavgh.mongodb.net/app?retryWrites=true&w=majority&appName=app'
-
+const connectionString = process.env.MONGO_DB_URI
 //conexion a mongoDB
 
 mongoose
