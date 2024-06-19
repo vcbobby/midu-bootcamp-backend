@@ -8,7 +8,7 @@ noteSchema.set('toJSON', {
     transform: (document, returnObject) => {
         returnObject.id = returnObject._id
         delete returnObject._id
-        returnObject.__v
+        delete returnObject.__v
     },
 })
 
