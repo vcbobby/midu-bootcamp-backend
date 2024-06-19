@@ -49,7 +49,7 @@ app.put('/api/notes/:id', (req, res, next) => {
 app.delete('/api/notes/:id', (req, res, next) => {
     const { id } = req.params
 
-    Note.findOneAndDelete(id)
+    Note.findByIdAndDelete(id)
         .then((result) => {
             res.status(204).end()
         })
