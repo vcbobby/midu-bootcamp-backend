@@ -58,7 +58,9 @@ app.post('/api/notes', (req, res) => {
 
 app.use((err, req, res, next) => {
     if (err.name === 'CastError') {
-        res.status(400).end()
+        res.status(400).json({
+            error: 'Id is malformed',
+        })
     } else {
         res.status(500).end()
     }
