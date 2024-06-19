@@ -4,6 +4,14 @@ const noteSchema = new Schema({
     body: String,
 })
 
+noteSchema.set('toJSON', {
+    transform: (document, returnObject) => {
+        returnObject.id = returnObject._id
+        delete returnObject._id
+        returnObject.__v
+    },
+})
+
 const Note = model('Note', noteSchema)
 
 module.exports = Note
