@@ -40,7 +40,6 @@ app.delete('/api/notes/:id', (req, res, next) => {
         .catch((err) => {
             next(err)
         })
-    res.status(204).end()
 })
 
 app.post('/api/notes', (req, res) => {
