@@ -20,14 +20,14 @@ app.get('/api/notes', (req, res) => {
     })
 })
 
-app.get('/api/notes/:id', (req, res) => {
+app.get('/api/notes/:id', (req, res, next) => {
     const { id } = req.params
     Note.findById(id)
         .then((note) => {
             res.json(note)
         })
         .catch((err) => {
-            res.status(400).end()
+            next(err)
         })
 })
 
@@ -56,10 +56,12 @@ app.post('/api/notes', (req, res) => {
     })
 })
 
-app.use((req, res) => {
-    res.status(404).json({
-        error: 'Not found',
-    })
+app.use((err, req, res, next) => {
+    if (err.name === 'CastError') {
+        res.status(400).end()
+    } else {
+        res.status(500).end()
+    }
 })
 
 module.exports = app
