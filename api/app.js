@@ -15,8 +15,8 @@ app.get('/', (req, res) => {
     res.send('<h1>Backend de app de notas bootcamp midudev</h1>')
 })
 
-// app.use('/api/notes', notesRouter)
-// app.use('/api/users', usersRouter)
+app.use('/api/notes', notesRouter)
+app.use('/api/users', usersRouter)
 app.use(notFound)
 
 app.use(error)
