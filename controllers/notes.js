@@ -60,7 +60,7 @@ notesRouter.delete('/:id', async (req, res, next) => {
 
 notesRouter.post('/', async (req, res, next) => {
     const note = req.body
-    if (!note || !note.title || !note.body) {
+    if (!note || !note.title || !note.body || !note.userId) {
         return res.status(400).json({
             error: 'The content of note is incomplete',
         })
@@ -69,6 +69,7 @@ notesRouter.post('/', async (req, res, next) => {
     const newNote = new Note({
         title: note.title,
         body: note.body,
+        userId: note.userId,
     })
 
     try {

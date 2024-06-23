@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const { app, server } = require('../index')
+const app = require('../api/app')
 const Note = require('../models/Note')
 
 const api = supertest(app)
@@ -9,10 +9,12 @@ const initialNotes = [
     {
         title: 'Titulo1 nota inicial para test',
         body: 'Body1 nota inicial para test',
+        userId: new mongoose.Types.ObjectId().toString(),
     },
     {
         title: 'Titulo2 nota inicial para test',
         body: 'Body2 nota inicial para test',
+        userId: new mongoose.Types.ObjectId().toString(),
     },
 ]
 beforeEach(async () => {
@@ -47,6 +49,7 @@ describe('Test path api/notes', () => {
         const newNote = {
             title: 'Probando enviar una nota',
             body: 'Test del post del backend',
+            userId: new mongoose.Types.ObjectId().toString(),
         }
 
         await api
@@ -80,6 +83,7 @@ describe('Test path api/notes/:id', () => {
         const noteData = {
             title: 'note by id',
             body: 'note by id body',
+            userId: new mongoose.Types.ObjectId().toString(),
         }
 
         // Crear una nueva nota y obtener su ID
@@ -101,12 +105,14 @@ describe('Test path api/notes/:id', () => {
         // Verificar que la nota obtenida tenga el título correcto
         expect(fetchedNote.title).toBe(noteData.title)
         expect(fetchedNote.body).toBe(noteData.body)
+        expect(fetchedNote.userId.toString()).toBe(noteData.userId)
     })
 
     test('Modify a note by its id', async () => {
         const noteData = {
             title: 'note by id for put',
             body: 'note by id body for put',
+            userId: new mongoose.Types.ObjectId().toString(),
         }
 
         // Crear una nueva nota y obtener su ID
@@ -148,6 +154,7 @@ describe('Test path api/notes/:id', () => {
         const noteData = {
             title: 'note by id for delete',
             body: 'note by id body for delete',
+            userId: new mongoose.Types.ObjectId().toString(),
         }
 
         // Crear una nueva nota y obtener su ID
@@ -169,5 +176,4 @@ describe('Test path api/notes/:id', () => {
 
 afterAll(() => {
     mongoose.connection.close()
-    server.close()
 })
