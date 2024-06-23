@@ -20,5 +20,9 @@ app.use('/api/users', usersRouter)
 app.use(notFound)
 
 app.use(error)
+app.use((err, req, res, next) => {
+    console.error(err.message)
+    res.status(500).send('Something went wrong!')
+})
 
 module.exports = app
