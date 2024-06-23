@@ -54,8 +54,12 @@ app.delete('/api/notes/:id', (req, res, next) => {
     const { id } = req.params
 
     Note.findByIdAndDelete(id)
-        .then(() => {
-            res.status(204).end()
+        .then((result) => {
+            if (result) {
+                res.status(204).end()
+            } else {
+                res.status(404).json({ error: 'Note not found' })
+            }
         })
         .catch((err) => {
             next(err)
@@ -66,7 +70,7 @@ app.post('/api/notes', (req, res, next) => {
     const note = req.body
 
     if (!note || !note.title || !note.body) {
-        res.status(400).json({
+        return res.status(400).json({
             error: 'The content of note is incomplete',
         })
     }
