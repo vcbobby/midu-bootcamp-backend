@@ -2,31 +2,46 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../api/app')
 const Note = require('../models/Note')
+const User = require('../models/User')
 
 const api = supertest(app)
+
+const initialUsers = [
+    { username: 'user1', name: 'name1', password: 'password1' },
+    { username: 'user2', name: 'name2', password: 'password2' },
+]
 
 const initialNotes = [
     {
         title: 'Titulo1 nota inicial para test',
         body: 'Body1 nota inicial para test',
-        userId: new mongoose.Types.ObjectId().toString(),
     },
     {
         title: 'Titulo2 nota inicial para test',
         body: 'Body2 nota inicial para test',
-        userId: new mongoose.Types.ObjectId().toString(),
     },
 ]
+
 beforeEach(async () => {
+    // Clean up database
     await Note.deleteMany({})
-    const nota1 = new Note(initialNotes[0])
-    await nota1.save()
-    const nota2 = new Note(initialNotes[1])
-    await nota2.save()
+    await User.deleteMany({})
+
+    // Create initial users
+    const userObjects = initialUsers.map((user) => new User(user))
+    const savedUsers = await Promise.all(userObjects.map((user) => user.save()))
+
+    // Assign valid user IDs to the notes
+    initialNotes[0].userId = savedUsers[0]._id
+    initialNotes[1].userId = savedUsers[1]._id
+
+    // Create initial notes
+    const noteObjects = initialNotes.map((note) => new Note(note))
+    await Promise.all(noteObjects.map((note) => note.save()))
 })
 
 describe('Test path api/notes', () => {
-    test('Notes as beeing returned as json', async () => {
+    test('Notes are returned as json', async () => {
         await api
             .get('/api/notes')
             .expect(200)
@@ -46,10 +61,13 @@ describe('Test path api/notes', () => {
     })
 
     test('A valid note can be added', async () => {
+        const newUser = new User({ username: 'user3', password: 'password3' })
+        const savedUser = await newUser.save()
+
         const newNote = {
             title: 'Probando enviar una nota',
             body: 'Test del post del backend',
-            userId: new mongoose.Types.ObjectId().toString(),
+            userId: savedUser._id,
         }
 
         await api
@@ -65,7 +83,7 @@ describe('Test path api/notes', () => {
         expect(titles).toContain(newNote.title)
     })
 
-    test('An empty note can not be added', async () => {
+    test('An empty note cannot be added', async () => {
         const newNote = {
             body: 'Test del post del backend',
         }
@@ -80,10 +98,13 @@ describe('Test path api/notes', () => {
 
 describe('Test path api/notes/:id', () => {
     test('Get a note by its id', async () => {
+        const newUser = new User({ username: 'user4', password: 'password4' })
+        const savedUser = await newUser.save()
+
         const noteData = {
             title: 'note by id',
             body: 'note by id body',
-            userId: new mongoose.Types.ObjectId().toString(),
+            userId: savedUser._id,
         }
 
         // Crear una nueva nota y obtener su ID
@@ -105,14 +126,17 @@ describe('Test path api/notes/:id', () => {
         // Verificar que la nota obtenida tenga el título correcto
         expect(fetchedNote.title).toBe(noteData.title)
         expect(fetchedNote.body).toBe(noteData.body)
-        expect(fetchedNote.userId.toString()).toBe(noteData.userId)
+        expect(fetchedNote.userId.toString()).toBe(noteData.userId.toString())
     })
 
     test('Modify a note by its id', async () => {
+        const newUser = new User({ username: 'user5', password: 'password5' })
+        const savedUser = await newUser.save()
+
         const noteData = {
             title: 'note by id for put',
             body: 'note by id body for put',
-            userId: new mongoose.Types.ObjectId().toString(),
+            userId: savedUser._id,
         }
 
         // Crear una nueva nota y obtener su ID
@@ -151,10 +175,13 @@ describe('Test path api/notes/:id', () => {
     })
 
     test('Delete a note by its id', async () => {
+        const newUser = new User({ username: 'user6', password: 'password6' })
+        const savedUser = await newUser.save()
+
         const noteData = {
             title: 'note by id for delete',
             body: 'note by id body for delete',
-            userId: new mongoose.Types.ObjectId().toString(),
+            userId: savedUser._id,
         }
 
         // Crear una nueva nota y obtener su ID

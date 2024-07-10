@@ -3,12 +3,10 @@ const { model, Schema } = require('mongoose')
 const noteSchema = new Schema({
     title: String,
     body: String,
-    userId: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-        },
-    ],
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
 })
 
 noteSchema.set('toJSON', {

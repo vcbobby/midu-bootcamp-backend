@@ -1,9 +1,14 @@
 const notesRouter = require('express').Router()
+const userExtractor = require('../middlewares/userExtractor')
 const Note = require('../models/Note')
+const User = require('../models/User')
 
 notesRouter.get('/', async (req, res, next) => {
     try {
-        const notes = await Note.find({})
+        const notes = await Note.find({}).populate('userId', {
+            name: 1,
+            username: 1,
+        })
         res.json(notes)
     } catch (err) {
         next(err)
@@ -25,7 +30,7 @@ notesRouter.get('/:id', async (req, res, next) => {
     }
 })
 
-notesRouter.put('/:id', async (req, res, next) => {
+notesRouter.put('/:id', userExtractor, async (req, res, next) => {
     const { id } = req.params
     const note = req.body
     const newNoteInfo = {
@@ -43,7 +48,7 @@ notesRouter.put('/:id', async (req, res, next) => {
     }
 })
 
-notesRouter.delete('/:id', async (req, res, next) => {
+notesRouter.delete('/:id', userExtractor, async (req, res, next) => {
     const { id } = req.params
 
     try {
@@ -58,22 +63,35 @@ notesRouter.delete('/:id', async (req, res, next) => {
     }
 })
 
-notesRouter.post('/', async (req, res, next) => {
-    const note = req.body
-    if (!note || !note.title || !note.body || !note.userId) {
+notesRouter.post('/', userExtractor, async (req, res, next) => {
+    const { title, body } = req.body
+
+    const { userId } = req
+
+    if (!title || !body || !userId) {
         return res.status(400).json({
             error: 'The content of note is incomplete',
         })
     }
 
-    const newNote = new Note({
-        title: note.title,
-        body: note.body,
-        userId: note.userId,
-    })
-
     try {
+        const user = await User.findById(userId)
+
+        if (!user) {
+            return res.status(400).json({
+                error: 'User not found',
+            })
+        }
+
+        const newNote = new Note({
+            title: title,
+            body: body,
+            userId: user._id,
+        })
+
         const noteToAdd = await newNote.save()
+        user.notes = user.notes.concat(noteToAdd._id)
+        await user.save()
         res.json(noteToAdd)
     } catch (err) {
         next(err)
